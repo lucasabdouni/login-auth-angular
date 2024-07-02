@@ -6,41 +6,46 @@ import { DefaultLoginLayoutComponent } from '../../components/default-login-layo
 import { PrimaryInputComponent } from '../../components/primary-input/primary-input.component';
 import { LoginService } from '../../services/login.service';
 
-interface LoginForm {
+interface SignupForm {
+  name: FormControl,
   email: FormControl,
   password: FormControl,
+  passwordConfirm: FormControl,
 }
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-signup',
   standalone: true,
   imports: [ReactiveFormsModule, DefaultLoginLayoutComponent, PrimaryInputComponent],
   providers: [LoginService],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  templateUrl: './signup.component.html',
+  styleUrl: './signup.component.scss'
 })
-export class LoginComponent {
-  loginForm!: FormGroup<LoginForm>
+
+export class SignupComponent {
+  signupForm!: FormGroup<SignupForm>
 
   constructor(
     private router: Router,
     private loginService: LoginService,
     private toastr: ToastrService
   ) {
-    this.loginForm = new FormGroup({
+    this.signupForm = new FormGroup({
+      name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       email: new FormControl('', [Validators.required]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+      passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)]),
     });
   }
 
   submit(){
-    this.loginService.login(this.loginForm.value.email, this.loginForm.value.password).subscribe({
+    this.loginService.login(this.signupForm.value.email, this.signupForm.value.password).subscribe({
       next: () => this.toastr.success("Login feito com sucesso !"),
       error: () => this.toastr.error("Erro inesperado! Tente novamente mais tarde."),
     })
   }
 
   navigate(){
-    this.router.navigate(['/signup']);
+    this.router.navigate(['/login']);
   }
 }
